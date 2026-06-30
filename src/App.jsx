@@ -1,122 +1,151 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useEffect } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import Home from "./Home";
+import Wishlist from "./Wishlist";
+import Cart from "./Cart";
+import ProductDetail from "./ProductDetail";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Initialize states from localStorage to prevent loss on refresh
+  const [likedProducts, setLikedProducts] = useState(() => {
+    const saved = localStorage.getItem("likedProducts");
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+  
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Save states to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem("likedProducts", JSON.stringify(Array.from(likedProducts)));
+  }, [likedProducts]);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const toggleLike = (id) => {
+    setLikedProducts(prev => {
+      const newLikes = new Set(prev);
+      if (newLikes.has(id)) {
+        newLikes.delete(id);
+      } else {
+        newLikes.add(id);
+      }
+      return newLikes;
+    });
+  };
+
+  const addToCart = (id) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === id);
+      if (existing) {
+        return prev; 
+      }
+      return [...prev, { id, quantity: 1 }];
+    });
+  };
+
+  const removeFromCart = (id) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const updateQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) return;
+    setCart(prev => prev.map(item => 
+      item.id === id ? { ...item, quantity: newQuantity } : item
+    ));
+  };
+
+  const cartItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app-container">
+      <header className="navbar">
+        <div className="navbar-left">
+          <div className="logo" onClick={() => navigate("/")} style={{ cursor: 'pointer' }}>
+            SoatShop
+          </div>
+          {location.pathname !== "/" && (
+            <button className="navbar-back-btn" onClick={() => navigate(-1)}>
+              &larr; Orqaga
+            </button>
+          )}
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+        <div className="navbar-right">
+          <div className="wishlist-icon" onClick={() => navigate("/wishlist")} title="Wishlist">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={likedProducts.size > 0 ? "#ff3b30" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            {likedProducts.size > 0 && <span className="icon-badge">{likedProducts.size}</span>}
+          </div>
+          
+          <div className="cart-icon" onClick={() => navigate("/cart")} title="Savat">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.01L23 6H6" /* fixed path minor typo just in case */></path>
+            </svg>
+            {cartItemsCount > 0 && <span className="icon-badge">{cartItemsCount}</span>}
+          </div>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </header>
+      
+      <main className="main-content">
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <Home 
+                likedProducts={likedProducts} 
+                toggleLike={toggleLike} 
+                cart={cart}
+                addToCart={addToCart}
+              />
+            } 
+          />
+          <Route 
+            path="/product/:id" 
+            element={
+              <ProductDetail 
+                likedProducts={likedProducts} 
+                toggleLike={toggleLike} 
+                cart={cart}
+                addToCart={addToCart}
+              />
+            } 
+          />
+          <Route 
+            path="/wishlist" 
+            element={
+              <Wishlist 
+                likedProducts={likedProducts} 
+                toggleLike={toggleLike} 
+                cart={cart}
+                addToCart={addToCart}
+              />
+            } 
+          />
+          <Route 
+            path="/cart" 
+            element={
+              <Cart 
+                cart={cart}
+                updateQuantity={updateQuantity}
+                removeFromCart={removeFromCart}
+              />
+            } 
+          />
+        </Routes>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
