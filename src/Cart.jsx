@@ -114,7 +114,11 @@ function Cart({
             productId: item.id,
             ProductId: String(item.id),
             quantity: item.quantity,
-            history: `Ordered ${item.quantity} units of ${item.name} for ${item.price}`
+            history: JSON.stringify({
+              address: address || "Yetkazish manzili",
+              status: "Kutilmoqda",
+              message: `Ordered ${item.quantity} units of ${item.name} for ${item.price}`
+            })
           });
 
           // Savat tarixidan o'chirish (DB)

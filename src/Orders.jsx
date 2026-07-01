@@ -24,25 +24,47 @@ function Orders({ products, userId }) {
     fetchOrders();
   }, [userId]);
 
-  // Buyurtmalarni statusiga ko'ra 3 ta guruhga ajratish:
+  // JSON yoki matn formatdagi history/statusni aniqlash yordamchisi
+  const getOrderStatusInfo = (order) => {
+    let statusText = "Kutilmoqda";
+    let messageText = "";
+    try {
+      const historyObj = typeof order.history === 'string' ? JSON.parse(order.history) : (order.history || {});
+      if (historyObj && typeof historyObj === 'object') {
+        statusText = historyObj.status || statusText;
+        messageText = historyObj.message || messageText;
+      } else {
+        statusText = order.history || statusText;
+      }
+    } catch (e) {
+      statusText = order.history || statusText;
+    }
+    return { status: statusText, message: messageText };
+  };
+
   // 1. Yetkazib berilganlar (Delivered)
-  const completedOrders = orders.filter(o => 
-    String(o.history).includes("Yetkazildi") || 
-    String(o.history).includes("Yetkazib berildi") || 
-    String(o.history).includes("Delivered")
-  );
+  const completedOrders = orders.filter(o => {
+    const { status } = getOrderStatusInfo(o);
+    return (
+      status.includes("Yetkazildi") || 
+      status.includes("Yetkazib berildi") || 
+      status.includes("Delivered")
+    );
+  });
 
-  // 2. Yetkazilayotganlar (Delivering / Shipped / Yo'lda)
-  const deliveringOrders = orders.filter(o => 
-    !completedOrders.includes(o) && (
-      String(o.history).includes("Yetkazilmoqda") || 
-      String(o.history).includes("Yo'lda") || 
-      String(o.history).includes("Delivering") || 
-      String(o.history).includes("Shipped")
-    )
-  );
+  // 2. Yetkazilayotganlar (Yetkazilmoqda / Yo'lda)
+  const deliveringOrders = orders.filter(o => {
+    if (completedOrders.includes(o)) return false;
+    const { status } = getOrderStatusInfo(o);
+    return (
+      status.includes("Yetkazilmoqda") || 
+      status.includes("Yo'lda") || 
+      status.includes("Delivering") || 
+      status.includes("Shipped")
+    );
+  });
 
-  // 3. Faol/Kutilayotganlar (Active / Ordered)
+  // 3. Faol/Kutilayotganlar
   const activeOrders = orders.filter(o => 
     !completedOrders.includes(o) && 
     !deliveringOrders.includes(o)
@@ -57,6 +79,8 @@ function Orders({ products, userId }) {
       hour: "2-digit",
       minute: "2-digit"
     });
+
+    const { status, message } = getOrderStatusInfo(order);
 
     return (
       <div className="order-history-card" key={order.id}>
@@ -78,7 +102,10 @@ function Orders({ products, userId }) {
             <p className="order-product-unknown">Mahsulot ID: #{order.productId} (Bazadan o'chirilgan bo'lishi mumkin)</p>
           )}
           <div className="order-status-desc">
-            <strong>Tavsif / Holati:</strong> {order.history}
+            <strong>Buyurtma holati:</strong> <span className={`status-badge-text ${
+              status === 'Yetkazib berildi' ? 'text-green' : status === 'Yetkazilmoqda' ? 'text-amber' : 'text-orange'
+            }`}>{status}</span>
+            {message && <p className="text-xs text-dark-textMuted mt-1">{message}</p>}
           </div>
         </div>
       </div>

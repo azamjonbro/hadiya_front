@@ -13,8 +13,8 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [products, setProducts] = useState(mockProducts);
-  const [categories, setCategories] = useState(mockCategories);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(["Barchasi"]);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +55,7 @@ function App() {
       try {
         const res = await api.get('/api/product');
         const dbProducts = res.data;
-        if (dbProducts && dbProducts.length > 0) {
+        if (dbProducts) {
           const formatted = dbProducts.map(p => {
             // Rasmlarni xavfsiz parse qilish
             let imageArray = [];
@@ -71,7 +71,7 @@ function App() {
 
             const firstImage = imageArray.length > 0 ? imageArray[0] : '';
             const imageUrl = firstImage 
-              ? (firstImage.startsWith('http') ? firstImage : `${api.defaults.baseURL}${firstImage}`) 
+              ? (firstImage.startsWith('http') || firstImage.startsWith('data:image') ? firstImage : `${api.defaults.baseURL}${firstImage}`) 
               : '/product1.png';
 
             const priceStr = String(p.price || '0');
@@ -91,30 +91,28 @@ function App() {
             };
           });
 
-          // Backend va mock mahsulotlarni ID bo'yicha to'qnashuvsiz birlashtirish
-          setProducts(prev => {
-            const dbIds = new Set(formatted.map(item => item.id));
-            const filteredMock = mockProducts.filter(item => !dbIds.has(item.id));
-            return [...formatted, ...filteredMock];
-          });
+          setProducts(formatted);
+        } else {
+          setProducts([]);
         }
       } catch (err) {
         console.error('Mahsulotlarni yuklashda xatolik:', err);
+        setProducts([]);
       }
 
       // 3. Kategoriyalarni olish
       try {
         const res = await api.get('/api/category');
         const dbCategories = res.data;
-        if (dbCategories && dbCategories.length > 0) {
-          setCategories(prev => {
-            const dbCats = dbCategories.map(c => c.name);
-            // Takrorlanmas kategoriyalarni birlashtirish
-            return Array.from(new Set([...prev, ...dbCats]));
-          });
+        if (dbCategories) {
+          const dbCats = dbCategories.map(c => c.name);
+          setCategories(["Barchasi", ...dbCats]);
+        } else {
+          setCategories(["Barchasi"]);
         }
       } catch (err) {
         console.error('Kategoriyalarni yuklashda xatolik:', err);
+        setCategories(["Barchasi"]);
       }
 
       // Silliq vizual preloader yuklanishi uchun kamida 1.5 soniya kutish
