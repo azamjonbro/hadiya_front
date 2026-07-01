@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { products, categories } from "./data";
 
-function Products({ likedProducts, toggleLike, cart, addToCart }) {
+function Products({ products, categories, likedProducts, toggleLike, cart, addToCart }) {
   const [selectedCategory, setSelectedCategory] = useState("Barchasi");
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();

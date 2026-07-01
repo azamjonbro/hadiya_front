@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { products } from "./data";
 
-function Wishlist({ likedProducts, toggleLike, cart, addToCart }) {
+function Wishlist({ products, likedProducts, toggleLike, cart, addToCart }) {
   const navigate = useNavigate();
 
+  // Istaklar ro'yxatidagi mahsulotlarni filtrlash
   const wishlistItems = products.filter(p => likedProducts.has(p.id));
 
   return (
@@ -24,7 +24,7 @@ function Wishlist({ likedProducts, toggleLike, cart, addToCart }) {
                 >
                   <img src={product.image} alt={product.name} />
                   
-                  {/* Eye View Button */}
+                  {/* Ko'rish tugmasi */}
                   <button 
                     className="view-badge-btn"
                     onClick={(e) => {
@@ -63,7 +63,7 @@ function Wishlist({ likedProducts, toggleLike, cart, addToCart }) {
                   <div className="product-card-footer">
                     <div className="price">{product.price}</div>
                     
-                    {/* Circular gold icon button instead of text */}
+                    {/* Savatga qo'shish tugmasi */}
                     <button 
                       className={`buy-btn icon-only-btn ${inCart ? 'in-cart' : ''}`} 
                       onClick={() => addToCart(product.id)}

@@ -1,28 +1,41 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { products } from "./data";
+import ProductDetailModal from "./ProductDetailModal";
+import api from "./api";
 
-// PLACEHOLDERS FOR TELEGRAM BOT: Replace these with your actual tokens!
+// Telegram Bot sozlamalari
 const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN";
 const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID";
 
-function Cart({ cart, updateQuantity, removeFromCart, setSelectedProduct }) {
+function Cart({ 
+  products, 
+  cart, 
+  updateQuantity, 
+  removeFromCart, 
+  addToCart, 
+  likedProducts, 
+  toggleLike, 
+  userId, 
+  setCart 
+}) {
   const navigate = useNavigate();
 
-  // Modal states
+  // Modal oynalar holati
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Form states
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  // Forma ma'lumotlari holati (Backend'ga to'liq mos ravishda)
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("+998");
 
+  // Savatdagi mahsulotlarni dynamic products prop'dan qidirib olish
   const cartItems = cart.map(item => {
     const product = products.find(p => p.id === item.id);
-    return { ...product, quantity: item.quantity };
-  });
+    return product ? { ...product, quantity: item.quantity } : null;
+  }).filter(Boolean);
 
   const totalPrice = cartItems.reduce((acc, item) => acc + (item.priceValue * item.quantity), 0);
 
@@ -30,24 +43,20 @@ function Cart({ cart, updateQuantity, removeFromCart, setSelectedProduct }) {
     return price.toLocaleString('ru-RU') + ' UZS';
   };
 
-  // Open Checkout and initialize phone prefix
   const handleOpenCheckout = () => {
     setIsCheckoutOpen(true);
     setPhone("+998");
   };
 
-  // Phone input mask handler (+998 (90) 123 45 67)
   const handlePhoneChange = (e) => {
     let input = e.target.value;
 
-    // Enforce default +998 start
     if (!input.startsWith("+998")) {
       input = "+998";
     }
 
     let digits = input.substring(4).replace(/\D/g, "");
 
-    // Handle backspace when cursor hits delimiters to prevent getting stuck
     const inputType = e.nativeEvent.inputType;
     if (inputType === "deleteContentBackward") {
       if (phone.endsWith(" ") || phone.endsWith(")")) {
@@ -55,7 +64,6 @@ function Cart({ cart, updateQuantity, removeFromCart, setSelectedProduct }) {
       }
     }
 
-    // Limit to 9 UZ phone body digits
     digits = digits.substring(0, 9);
 
     let formatted = "+998";
@@ -65,7 +73,7 @@ function Cart({ cart, updateQuantity, removeFromCart, setSelectedProduct }) {
     if (digits.length > 2) {
       formatted += ") " + digits.substring(2, 5);
     } else if (digits.length === 2) {
-      formatted += ")"; // closed bracket only
+      formatted += ")";
     }
     if (digits.length > 5) {
       formatted += " " + digits.substring(5, 7);
@@ -77,35 +85,69 @@ function Cart({ cart, updateQuantity, removeFromCart, setSelectedProduct }) {
     setPhone(formatted);
   };
 
-  // Submit order to Telegram Bot
+  // Buyurtmani jo'natish (Railway API va Telegram Bot)
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
-    if (!name || phone.length < 19) {
-      alert("Iltimos, telefon raqamingizni to'liq kiriting: +998 (90) 123 45 67");
+    if (!firstName || !lastName || phone.length < 19) {
+      alert("Iltimos, barcha maydonlarni to'ldiring va telefon raqamingizni to'liq kiriting: +998 (90) 123 45 67");
       return;
     }
 
     setIsSubmitting(true);
 
-    // Format products list for Telegram message
-    const productsDetails = cartItems
-      .map(item => `• ${item.name} (${item.quantity} dona) - ${formatPrice(item.priceValue * item.quantity)}`)
-      .join("\n");
+    try {
+      // 1. User ma'lumotlarini (Ism, Familiya, Telefon) Railway bazasida yangilash
+      if (userId) {
+        await api.put(`/api/user/${userId}`, {
+          firstName: firstName,
+          lastName: lastName,
+          phone: phone
+        });
+      }
 
-    const message = `
+      // 2. Railway bazasiga buyurtma tarixini qo'shish va orqa fonda savatni ozalash
+      if (userId && cartItems.length > 0) {
+        for (const item of cartItems) {
+          // Buyurtma tarixiga qo'shish
+          await api.post('/api/orderhistory', {
+            userId,
+            productId: item.id,
+            ProductId: String(item.id),
+            quantity: item.quantity,
+            history: `Ordered ${item.quantity} units of ${item.name} for ${item.price}`
+          });
+
+          // Savat tarixidan o'chirish (DB)
+          try {
+            const res = await api.get(`/api/carthistory?userId=${userId}`);
+            const found = res.data.find(c => Number(c.productId) === Number(item.id));
+            if (found) {
+              await api.delete(`/api/carthistory/${found.id}`);
+            }
+          } catch (e) {
+            console.error('Baza savat elementini o\'chirishda xato:', e);
+          }
+        }
+      }
+
+      // Telegram xabari matnini formatlash (Ism, Familiya va Telefon bilan)
+      const productsDetails = cartItems
+        .map(item => `• ${item.name} (${item.quantity} dona) - ${formatPrice(item.priceValue * item.quantity)}`)
+        .join("\n");
+
+      const message = `
 🔔 YANGI BUYURTMA!
 
-👤 Buyurtmachi: ${name}
+👤 Buyurtmachi: ${firstName} ${lastName}
 📞 Telefon: ${phone}
-📧 Email: ${email || "Ko'rsatilmagan"}
 
 📦 Mahsulotlar:
 ${productsDetails}
 
 💰 Jami summa: ${formatPrice(totalPrice)}
-    `;
+      `;
 
-    try {
+      // 3. Telegram Botga jo'natish
       if (TELEGRAM_BOT_TOKEN !== "YOUR_BOT_TOKEN" && TELEGRAM_CHAT_ID !== "YOUR_CHAT_ID") {
         await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
           method: "POST",
@@ -118,14 +160,18 @@ ${productsDetails}
           }),
         });
       } else {
-        console.log("Telegram Bot simulated submit. Log message:\n", message);
+        console.log("Telegram Bot simulyatsiya qilindi. Xabar:\n", message);
       }
+
+      // Local storage va state savatlarini tozalash
+      setCart([]);
+      localStorage.setItem("cart", JSON.stringify([]));
 
       setIsSubmitting(false);
       setIsCheckoutOpen(false);
       setIsSuccessOpen(true);
     } catch (error) {
-      console.error("Order submission error:", error);
+      console.error("Buyurtma yuborishda xatolik:", error);
       alert("Xatolik yuz berdi. Iltimos keyinroq qayta urinib ko'ring!");
       setIsSubmitting(false);
     }
@@ -143,13 +189,13 @@ ${productsDetails}
             {cartItems.map(item => (
               <div className="cart-item" key={item.id}>
                 <div 
-                  className="cart-item-image"
+                  className="cart-item-image clickable"
                   onClick={() => setSelectedProduct(item)}
                 >
                   <img src={item.image} alt={item.name} />
                 </div>
                 <div className="cart-item-details">
-                  <h3 onClick={() => setSelectedProduct(item)}>{item.name}</h3>
+                  <h3 className="clickable" onClick={() => setSelectedProduct(item)}>{item.name}</h3>
                   <p className="cart-item-category">{item.category}</p>
                   <div className="cart-item-price">{item.price}</div>
                 </div>
@@ -197,7 +243,7 @@ ${productsDetails}
         </div>
       )}
 
-      {/* MODAL 1: CHECKOUT FORM */}
+      {/* 1-MODAL: BUYURTMA FORMASI */}
       {isCheckoutOpen && (
         <div className="modal-overlay" onClick={() => setIsCheckoutOpen(false)}>
           <div className="modal-container checkout-modal" onClick={(e) => e.stopPropagation()}>
@@ -207,13 +253,25 @@ ${productsDetails}
             <h2 className="modal-checkout-title">Buyurtmani rasmiylashtirish</h2>
             <form onSubmit={handleOrderSubmit} className="checkout-form">
               <div className="form-group">
-                <label htmlFor="client-name">Ismingiz *</label>
+                <label htmlFor="client-firstname">Ismingiz *</label>
                 <input 
                   type="text" 
-                  id="client-name"
+                  id="client-firstname"
                   placeholder="Ismingizni kiriting" 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="client-lastname">Familiyangiz *</label>
+                <input 
+                  type="text" 
+                  id="client-lastname"
+                  placeholder="Familiyangizni kiriting" 
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   required
                 />
               </div>
@@ -230,17 +288,6 @@ ${productsDetails}
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="client-email">Email manzilingiz (ixtiyoriy)</label>
-                <input 
-                  type="email" 
-                  id="client-email"
-                  placeholder="example@gmail.com" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-
               <button type="submit" className="checkout-btn submit-order-btn" disabled={isSubmitting}>
                 {isSubmitting ? "Yuborilmoqda..." : "Buyurtmani yuborish"}
               </button>
@@ -249,7 +296,7 @@ ${productsDetails}
         </div>
       )}
 
-      {/* MODAL 2: SUCCESS MESSAGE */}
+      {/* 2-MODAL: MUVAFFAQIYAT XABARI */}
       {isSuccessOpen && (
         <div className="modal-overlay" onClick={() => setIsSuccessOpen(false)}>
           <div className="modal-container success-modal" onClick={(e) => e.stopPropagation()}>
@@ -267,12 +314,24 @@ ${productsDetails}
             </p>
             <button className="checkout-btn success-close-btn" onClick={() => {
               setIsSuccessOpen(false);
-              navigate('/'); // redirect home after success
+              navigate('/');
             }}>
               Asosiy sahifaga qaytish
             </button>
           </div>
         </div>
+      )}
+
+      {/* MAHSULOT DETAILS MODAL (SAVATDA BOSILGANDA) */}
+      {selectedProduct && (
+        <ProductDetailModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)} 
+          cart={cart}
+          addToCart={addToCart}
+          likedProducts={likedProducts}
+          toggleLike={toggleLike}
+        />
       )}
     </div>
   );
