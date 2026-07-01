@@ -24,10 +24,29 @@ function Orders({ products, userId }) {
     fetchOrders();
   }, [userId]);
 
-  // Faol va Yetkazilgan buyurtmalarni ajratish
-  // Agar history maydonida "Yetkazildi" yoki "Delivered" so'zi bo'lsa, yetkazilgan hisoblanadi. Aks holda faol.
-  const activeOrders = orders.filter(o => !String(o.history).includes("Yetkazildi") && !String(o.history).includes("Delivered"));
-  const completedOrders = orders.filter(o => String(o.history).includes("Yetkazildi") || String(o.history).includes("Delivered"));
+  // Buyurtmalarni statusiga ko'ra 3 ta guruhga ajratish:
+  // 1. Yetkazib berilganlar (Delivered)
+  const completedOrders = orders.filter(o => 
+    String(o.history).includes("Yetkazildi") || 
+    String(o.history).includes("Yetkazib berildi") || 
+    String(o.history).includes("Delivered")
+  );
+
+  // 2. Yetkazilayotganlar (Delivering / Shipped / Yo'lda)
+  const deliveringOrders = orders.filter(o => 
+    !completedOrders.includes(o) && (
+      String(o.history).includes("Yetkazilmoqda") || 
+      String(o.history).includes("Yo'lda") || 
+      String(o.history).includes("Delivering") || 
+      String(o.history).includes("Shipped")
+    )
+  );
+
+  // 3. Faol/Kutilayotganlar (Active / Ordered)
+  const activeOrders = orders.filter(o => 
+    !completedOrders.includes(o) && 
+    !deliveringOrders.includes(o)
+  );
 
   const renderOrderCard = (order) => {
     const product = products.find(p => p.id === Number(order.productId));
@@ -76,6 +95,8 @@ function Orders({ products, userId }) {
         <div className="no-results"><p>Yuklanmoqda...</p></div>
       ) : orders.length > 0 ? (
         <div className="orders-container">
+          
+          {/* 1. FAOL BUYURTMALAR */}
           <div className="orders-section">
             <h3 className="section-title">Faol buyurtmalar ({activeOrders.length})</h3>
             {activeOrders.length > 0 ? (
@@ -87,6 +108,21 @@ function Orders({ products, userId }) {
             )}
           </div>
 
+          {/* 2. YETKAZILMOQDA (YO'LDA) */}
+          <div className="orders-section" style={{ marginTop: "3rem" }}>
+            <h3 className="section-title delivering-title" style={{ borderLeftColor: '#f59e0b' }}>
+              Yetkazilmoqda ({deliveringOrders.length})
+            </h3>
+            {deliveringOrders.length > 0 ? (
+              <div className="orders-grid-list">
+                {deliveringOrders.map(renderOrderCard)}
+              </div>
+            ) : (
+              <p className="no-orders-msg">Hozirda yo'ldagi buyurtmalar mavjud emas.</p>
+            )}
+          </div>
+
+          {/* 3. YETKAZIB BERILGAN */}
           <div className="orders-section" style={{ marginTop: "3rem" }}>
             <h3 className="section-title completed-title">Yetkazib berilgan buyurtmalar ({completedOrders.length})</h3>
             {completedOrders.length > 0 ? (
@@ -97,6 +133,7 @@ function Orders({ products, userId }) {
               <p className="no-orders-msg">Hali yetkazilgan buyurtmalar mavjud emas.</p>
             )}
           </div>
+
         </div>
       ) : (
         <div className="no-results">
