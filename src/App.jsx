@@ -46,7 +46,7 @@ function App() {
           localUserId = res.data.id;
           localStorage.setItem('userId', localUserId);
         } catch (err) {
-          console.error('User yaratishda xatolik:', err);
+          // silent
         }
       }
       setUserId(localUserId ? Number(localUserId) : null);
@@ -102,7 +102,6 @@ function App() {
           setProducts([]);
         }
       } catch (err) {
-        console.error('Mahsulotlarni yuklashda xatolik:', err);
         setProducts([]);
       }
 
@@ -117,7 +116,6 @@ function App() {
           setCategories(["Barchasi"]);
         }
       } catch (err) {
-        console.error('Kategoriyalarni yuklashda xatolik:', err);
         setCategories(["Barchasi"]);
       }
 
@@ -160,14 +158,14 @@ function App() {
             productId: targetId,
             productid: String(targetId),
             likedAt: new Date().toISOString()
-          }).catch(err => console.error('Like qo\'shishda xatolik:', err));
+          }).catch(() => {});
         } else {
           api.get(`/api/likeshistory?userId=${userId}`).then(res => {
             const found = res.data.find(l => Number(l.productId) === targetId);
             if (found) {
-              api.delete(`/api/likeshistory/${found.id}`).catch(err => console.error('Like o\'chirishda xatolik:', err));
+              api.delete(`/api/likeshistory/${found.id}`).catch(() => {});
             }
-          }).catch(err => console.error('Likes ro\'yxatini olishda xatolik:', err));
+          }).catch(() => {});
         }
       }
       return newLikes;
@@ -188,7 +186,7 @@ function App() {
           ProductId: String(targetId),
           quantity: 1,
           history: 'Added'
-        }).catch(err => console.error('Savatga qo\'shishda xatolik:', err));
+        }).catch(() => {});
       }
       return [...prev, { id: targetId, quantity: 1 }];
     });
@@ -201,9 +199,9 @@ function App() {
         api.get(`/api/carthistory?userId=${userId}`).then(res => {
           const found = res.data.find(c => Number(c.productId) === targetId);
           if (found) {
-            api.delete(`/api/carthistory/${found.id}`).catch(err => console.error('Savatdan o\'chirishda xatolik:', err));
+            api.delete(`/api/carthistory/${found.id}`).catch(() => {});
           }
-        }).catch(err => console.error('Savat ro\'yxatini olishda xatolik:', err));
+        }).catch(() => {});
       }
       return prev.filter(item => item.id !== targetId);
     });
@@ -220,9 +218,9 @@ function App() {
             api.put(`/api/carthistory/${found.id}`, {
               quantity: newQuantity,
               history: `Updated quantity to ${newQuantity}`
-            }).catch(err => console.error('Savat miqdorini yangilashda xatolik:', err));
+            }).catch(() => {});
           }
-        }).catch(err => console.error('Savat ro\'yxatini olishda xatolik:', err));
+        }).catch(() => {});
       }
       return prev.map(item => 
         item.id === targetId ? { ...item, quantity: newQuantity } : item

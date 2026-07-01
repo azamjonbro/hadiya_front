@@ -115,7 +115,7 @@ function Cart({
             ProductId: String(item.id),
             quantity: item.quantity,
             history: JSON.stringify({
-              address: address || "Yetkazish manzili",
+              address: `${firstName} ${lastName}, ${phone}`,
               status: "Kutilmoqda",
               message: `Ordered ${item.quantity} units of ${item.name} for ${item.price}`
             })
@@ -129,7 +129,7 @@ function Cart({
               await api.delete(`/api/carthistory/${found.id}`);
             }
           } catch (e) {
-            console.error('Baza savat elementini o\'chirishda xato:', e);
+            // silent
           }
         }
       }
@@ -164,7 +164,7 @@ ${productsDetails}
           }),
         });
       } else {
-        console.log("Telegram Bot simulyatsiya qilindi. Xabar:\n", message);
+        // Buyurtma yuborildi
       }
 
       // Local storage va state savatlarini tozalash
@@ -175,7 +175,6 @@ ${productsDetails}
       setIsCheckoutOpen(false);
       setIsSuccessOpen(true);
     } catch (error) {
-      console.error("Buyurtma yuborishda xatolik:", error);
       alert("Xatolik yuz berdi. Iltimos keyinroq qayta urinib ko'ring!");
       setIsSubmitting(false);
     }
