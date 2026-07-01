@@ -60,19 +60,24 @@ function App() {
             // Rasmlarni xavfsiz parse qilish
             let imageArray = [];
             try {
-              if (typeof p.images === 'string') {
+              if (typeof p.images === 'string' && p.images && p.images !== 'null') {
                 imageArray = JSON.parse(p.images);
               } else if (Array.isArray(p.images)) {
                 imageArray = p.images;
               }
+              // Har doim massiv ekanligini kafolatlash
+              if (!Array.isArray(imageArray)) imageArray = [];
             } catch (e) {
-              console.error("Images parse qilishda xatolik:", e);
+              imageArray = [];
             }
 
             const firstImage = imageArray.length > 0 ? imageArray[0] : '';
-            const imageUrl = firstImage 
-              ? (firstImage.startsWith('http') || firstImage.startsWith('data:image') ? firstImage : `${api.defaults.baseURL}${firstImage}`) 
-              : '/product1.png';
+            const resolveImg = (img) => {
+              if (!img) return '/product1.png';
+              if (img.startsWith('http') || img.startsWith('data:image') || img.startsWith('/')) return img;
+              return `${api.defaults.baseURL}${img}`;
+            };
+            const imageUrl = firstImage ? resolveImg(firstImage) : '/product1.png';
 
             const priceStr = String(p.price || '0');
             const priceValue = parseFloat(priceStr.replace(/\s/g, '').replace('UZS', '')) || 0;
@@ -85,6 +90,7 @@ function App() {
               price: formattedPrice,
               priceValue: priceValue,
               image: imageUrl,
+              images: imageArray.length > 0 ? imageArray.map(resolveImg) : [imageUrl],
               description: p.description || p.name || 'Premium Soat',
               fullDescription: p.fullDescription || p.description || 'Premium klass soat.',
               category: p.category || 'Barchasi'
