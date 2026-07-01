@@ -15,7 +15,7 @@ function Orders({ products, userId }) {
         const res = await api.get(`/api/orderhistory?userId=${userId}`);
         setOrders(res.data);
       } catch (err) {
-        console.error("Buyurtmalarni yuklashda xatolik:", err);
+        // silent
       } finally {
         setLoading(false);
       }
