@@ -1,6 +1,6 @@
 import Products from "./Products";
 
-function Home({ likedProducts, toggleLike, cart, addToCart }) {
+function Home({ products, categories, likedProducts, toggleLike, cart, addToCart }) {
   
   const scrollToProducts = () => {
     const productsSection = document.getElementById("products-section");
@@ -33,6 +33,8 @@ function Home({ likedProducts, toggleLike, cart, addToCart }) {
       
       <div id="products-section">
         <Products 
+          products={products}
+          categories={categories}
           likedProducts={likedProducts}
           toggleLike={toggleLike}
           cart={cart}

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { products } from "./data";
 
-function ProductDetail({ cart, addToCart, likedProducts, toggleLike }) {
+function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [selectedAngle, setSelectedAngle] = useState(0);
