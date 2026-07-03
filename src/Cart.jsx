@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ProductDetailModal from "./ProductDetailModal";
 import api from "./api";
 
-// Telegram Bot sozlamalari
-const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN";
-const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID";
+// Telegram va AmoCRM sozlamalari endi backend'da boshqariladi
 
 function Cart({ 
   products, 
@@ -85,7 +83,7 @@ function Cart({
     setPhone(formatted);
   };
 
-  // Buyurtmani jo'natish (Railway API va Telegram Bot)
+  // Buyurtmani jo'natish (Backend API orqali)
   const handleOrderSubmit = async (e) => {
     e.preventDefault();
     if (!firstName || !lastName || phone.length < 19) {
@@ -96,76 +94,21 @@ function Cart({
     setIsSubmitting(true);
 
     try {
-      // 1. User ma'lumotlarini (Ism, Familiya, Telefon) Railway bazasida yangilash
-      if (userId) {
-        await api.put(`/api/user/${userId}`, {
-          firstName: firstName,
-          lastName: lastName,
-          phone: phone
-        });
-      }
-
-      // 2. Railway bazasiga buyurtma tarixini qo'shish va orqa fonda savatni ozalash
-      if (userId && cartItems.length > 0) {
-        for (const item of cartItems) {
-          // Buyurtma tarixiga qo'shish
-          await api.post('/api/orderhistory', {
-            userId,
-            productId: item.id,
-            ProductId: String(item.id),
-            quantity: item.quantity,
-            history: JSON.stringify({
-              address: `${firstName} ${lastName}, ${phone}`,
-              status: "Kutilmoqda",
-              message: `Ordered ${item.quantity} units of ${item.name} for ${item.price}`
-            })
-          });
-
-          // Savat tarixidan o'chirish (DB)
-          try {
-            const res = await api.get(`/api/carthistory?userId=${userId}`);
-            const found = res.data.find(c => Number(c.productId) === Number(item.id));
-            if (found) {
-              await api.delete(`/api/carthistory/${found.id}`);
-            }
-          } catch (e) {
-            // silent
-          }
-        }
-      }
-
-      // Telegram xabari matnini formatlash (Ism, Familiya va Telefon bilan)
-      const productsDetails = cartItems
-        .map(item => `• ${item.name} (${item.quantity} dona) - ${formatPrice(item.priceValue * item.quantity)}`)
-        .join("\n");
-
-      const message = `
-🔔 YANGI BUYURTMA!
-
-👤 Buyurtmachi: ${firstName} ${lastName}
-📞 Telefon: ${phone}
-
-📦 Mahsulotlar:
-${productsDetails}
-
-💰 Jami summa: ${formatPrice(totalPrice)}
-      `;
-
-      // 3. Telegram Botga jo'natish
-      if (TELEGRAM_BOT_TOKEN !== "YOUR_BOT_TOKEN" && TELEGRAM_CHAT_ID !== "YOUR_CHAT_ID") {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: message,
-          }),
-        });
-      } else {
-        // Buyurtma yuborildi
-      }
+      // API call to POST /api/order
+      await api.post('/api/order', {
+        userId: userId ? Number(userId) : null,
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        cartItems: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          priceValue: item.priceValue
+        })),
+        totalPrice: totalPrice
+      });
 
       // Local storage va state savatlarini tozalash
       setCart([]);
@@ -175,6 +118,7 @@ ${productsDetails}
       setIsCheckoutOpen(false);
       setIsSuccessOpen(true);
     } catch (error) {
+      console.error("Order submission error:", error);
       alert("Xatolik yuz berdi. Iltimos keyinroq qayta urinib ko'ring!");
       setIsSubmitting(false);
     }
