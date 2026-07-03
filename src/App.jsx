@@ -385,7 +385,7 @@ function App() {
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent"
             }}>
-              SoatShop
+              Alharameen
             </h2>
             <p style={{
               fontSize: "0.9rem",
