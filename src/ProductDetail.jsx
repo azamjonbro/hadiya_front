@@ -5,6 +5,7 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
   const { id } = useParams();
   const navigate = useNavigate();
   const [selectedAngle, setSelectedAngle] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   const product = products.find(p => p.id === parseInt(id));
 
@@ -12,6 +13,7 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
   useEffect(() => {
     window.scrollTo(0, 0);
     setSelectedAngle(0); // reset to main angle
+    setIsExpanded(false); // reset expanded state
   }, [id]);
 
   if (!product) {
@@ -28,12 +30,8 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
   const inCart = cart.some(item => item.id === product.id);
   const isLiked = likedProducts.has(product.id);
 
-  // 3 distinct angles for the watch gallery
-  const angles = [
-    { label: "Asosiy ko'rinish", transform: "none" },
-    { label: "Yonbosh ko'rinish", transform: "rotateY(40deg) scale(0.95)" },
-    { label: "Yaqindan ko'rinish", transform: "scale(1.2)" }
-  ];
+  // Extract real uploaded images, fallback to single product.image
+  const galleryImages = product.images && product.images.length > 0 ? product.images : [product.image || '/product1.png'];
 
   // Fetch 4 related products from the same category
   const relatedProducts = products
@@ -45,13 +43,15 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
       <div className="detail-fullscreen-content">
         <div className="detail-left-visual">
           <div className="detail-image-card">
-            <div className="main-image-viewport" style={{ perspective: "1000px" }}>
+            <div className="main-image-viewport">
               <img 
-                src={product.image} 
+                src={galleryImages[selectedAngle] || '/product1.png'} 
                 alt={product.name} 
                 style={{ 
-                  transform: angles[selectedAngle].transform, 
-                  transition: "transform 0.5s ease" 
+                  transition: "opacity 0.3s ease",
+                  objectFit: "contain",
+                  width: "100%",
+                  height: "100%"
                 }} 
               />
             </div>
@@ -66,24 +66,25 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
             </button>
           </div>
 
-          {/* 3 gallery thumbnails below the main image card */}
-          <div className="detail-thumbnail-gallery horizontal-three">
-            {angles.map((angle, idx) => (
-              <button 
-                key={idx} 
-                className={`thumbnail-box ${selectedAngle === idx ? 'active' : ''}`}
-                onClick={() => setSelectedAngle(idx)}
-                title={angle.label}
-                style={{ perspective: "500px" }}
-              >
-                <img 
-                  src={product.image} 
-                  alt={`${product.name} ${angle.label}`}
-                  style={{ transform: angle.transform }}
-                />
-              </button>
-            ))}
-          </div>
+          {/* Real gallery thumbnails below the main image card */}
+          {galleryImages.length > 1 && (
+            <div className="detail-thumbnail-gallery horizontal-three">
+              {galleryImages.map((img, idx) => (
+                <button 
+                  key={idx} 
+                  className={`thumbnail-box ${selectedAngle === idx ? 'active' : ''}`}
+                  onClick={() => setSelectedAngle(idx)}
+                  title={`Rasm ${idx + 1}`}
+                >
+                  <img 
+                    src={img} 
+                    alt={`${product.name} rasm ${idx + 1}`}
+                    style={{ objectFit: "contain", width: "100%", height: "100%" }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         
         <div className="detail-right-info">
@@ -92,9 +93,53 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
             <h1 className="detail-title">{product.name}</h1>
             <div className="detail-price">{product.price}</div>
             
-            <div className="detail-section-block">
+            <div className="detail-section-block" style={{ position: 'relative' }}>
               <h3>Mahsulot tavsifi</h3>
-              <p>{product.fullDescription}</p>
+              <div 
+                className="product-description-content"
+                style={{ 
+                  maxHeight: isExpanded ? 'none' : '150px', 
+                  overflow: 'hidden',
+                  position: 'relative',
+                  transition: 'max-height 0.4s ease'
+                }}
+                dangerouslySetInnerHTML={{ __html: product.fullDescription || 'Tavsif yo\'q' }}
+              />
+              
+              {!isExpanded && product.fullDescription && product.fullDescription.length > 250 && (
+                <div 
+                  style={{ 
+                    position: 'absolute', 
+                    bottom: '30px', 
+                    left: 0, 
+                    right: 0, 
+                    height: '60px', 
+                    background: 'linear-gradient(to top, var(--bg-card, #ffffff), transparent)', 
+                    pointerEvents: 'none' 
+                  }} 
+                />
+              )}
+              
+              {product.fullDescription && product.fullDescription.length > 250 && (
+                <button
+                  type="button"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  style={{ 
+                    color: 'var(--accent)', 
+                    cursor: 'pointer', 
+                    background: 'none', 
+                    border: 'none', 
+                    padding: '8px 0 0 0',
+                    fontSize: '0.85rem',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  {isExpanded ? "Qisqartirish ▲" : "Batafsil ko'rish ▼"}
+                </button>
+              )}
             </div>
 
             <div className="detail-specs-grid">
