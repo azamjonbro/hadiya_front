@@ -418,7 +418,7 @@ function App() {
       <header className="navbar">
         <div className="navbar-left">
           <div className="logo" onClick={() => navigate("/")} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-            <img src="/alharameen.png" alt="Logo" style={{ height: '40px', objectFit: 'contain' }} />
+            <img src="/alharameen.png" alt="Logo" style={{ height: '95px', objectFit: 'contain' }} />
           </div>
           {location.pathname !== "/" && (
             <button className="navbar-back-btn" onClick={() => navigate(-1)}>
