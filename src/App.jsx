@@ -74,7 +74,9 @@ function App() {
             const firstImage = imageArray.length > 0 ? imageArray[0] : '';
             const resolveImg = (img) => {
               if (!img) return '/product1.png';
-              if (img.startsWith('http') || img.startsWith('data:image') || img.startsWith('/')) return img;
+              if (img.startsWith('http') || img.startsWith('data:image')) return img;
+              if (img.startsWith('/uploads/')) return `${api.defaults.baseURL}${img}`;
+              if (img.startsWith('/')) return img;
               return `${api.defaults.baseURL}${img}`;
             };
             const imageUrl = firstImage ? resolveImg(firstImage) : '/product1.png';
