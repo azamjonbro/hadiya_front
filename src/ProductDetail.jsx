@@ -17,6 +17,24 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
     setIsExpanded(false); // reset expanded state
   }, [id]);
 
+  // Dynamic SEO metadata update
+  useEffect(() => {
+    if (product) {
+      document.title = `${product.name} — Alharameen Uzbekistan`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute("content", product.shortDescription || `${product.name} premium islomiy va azon soati Alharameen rasmiy do'konida.`);
+      }
+    }
+    return () => {
+      document.title = "Alharameen Uzbekistan — Rasmiy Islomiy va Zamonaviy Soatlar Do'koni";
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute("content", "Alharameen soatlari va uzuklarining O'zbekistondagi rasmiy do'koni. Azon ovozi, namoz vaqtlari, qibla yo'nalishini ko'rsatuvchi aqlli islomiy va zamonaviy qo'l soatlari. Eng maqbul narxlar va 1 yillik kafolat.");
+      }
+    };
+  }, [product]);
+
   if (!product) {
     return (
       <div className="product-detail-page not-found">
