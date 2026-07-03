@@ -1,3 +1,5 @@
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductCardImage from "./ProductCardImage";
 
 function Products({ products, categories, likedProducts, toggleLike, cart, addToCart }) {
@@ -164,8 +166,9 @@ function Products({ products, categories, likedProducts, toggleLike, cart, addTo
                           <div 
                             className="product-image-container clickable" 
                             onClick={() => navigate(`/product/${product.id}`)}
+                            style={{ padding: 0, overflow: 'visible', background: 'transparent' }}
                           >
-                            <img src={product.image} alt={product.name} />
+                            <ProductCardImage images={product.images} name={product.name} />
                             
                             <button 
                               className="view-badge-btn"
@@ -275,8 +278,9 @@ function Products({ products, categories, likedProducts, toggleLike, cart, addTo
                           <div 
                             className="product-image-container clickable" 
                             onClick={() => navigate(`/product/${product.id}`)}
+                            style={{ padding: 0, overflow: 'visible', background: 'transparent' }}
                           >
-                            <img src={product.image} alt={product.name} />
+                            <ProductCardImage images={product.images} name={product.name} />
                             
                             <button 
                               className="view-badge-btn"

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import ProductCardImage from "./ProductCardImage";
 
 function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike }) {
   const { id } = useParams();
@@ -183,8 +184,9 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
                   <div 
                     className="product-image-container clickable"
                     onClick={() => navigate(`/product/${related.id}`)}
+                    style={{ padding: 0, overflow: 'visible', background: 'transparent' }}
                   >
-                    <img src={related.image} alt={related.name} />
+                    <ProductCardImage images={related.images} name={related.name} />
                     
                     <button 
                       className="view-badge-btn"
