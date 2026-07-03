@@ -49,7 +49,7 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
                 alt={product.name} 
                 style={{ 
                   transition: "opacity 0.3s ease",
-                  objectFit: "contain",
+                  objectFit: "cover",
                   width: "100%",
                   height: "100%"
                 }} 
