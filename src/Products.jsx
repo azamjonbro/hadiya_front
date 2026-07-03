@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import ProductCardImage from "./ProductCardImage";
 
 function Products({ products, categories, likedProducts, toggleLike, cart, addToCart }) {
   const [selectedCategory, setSelectedCategory] = useState("Barchasi");
