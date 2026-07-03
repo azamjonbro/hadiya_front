@@ -23,7 +23,7 @@ function App() {
     const saved = localStorage.getItem("likedProducts");
     return saved ? new Set(JSON.parse(saved).map(Number)) : new Set();
   });
-  
+
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem("cart");
     return saved ? JSON.parse(saved).map(item => ({ ...item, id: Number(item.id) })) : [];
@@ -149,7 +149,7 @@ function App() {
       } else {
         newLikes.add(targetId);
       }
-      
+
       // DB bilan sinxronizatsiya
       if (userId) {
         if (isLiked) {
@@ -158,14 +158,14 @@ function App() {
             productId: targetId,
             productid: String(targetId),
             likedAt: new Date().toISOString()
-          }).catch(() => {});
+          }).catch(() => { });
         } else {
           api.get(`/api/likeshistory?userId=${userId}`).then(res => {
             const found = res.data.find(l => Number(l.productId) === targetId);
             if (found) {
-              api.delete(`/api/likeshistory/${found.id}`).catch(() => {});
+              api.delete(`/api/likeshistory/${found.id}`).catch(() => { });
             }
-          }).catch(() => {});
+          }).catch(() => { });
         }
       }
       return newLikes;
@@ -177,7 +177,7 @@ function App() {
     setCart(prev => {
       const existing = prev.find(item => item.id === targetId);
       if (existing) {
-        return prev; 
+        return prev;
       }
       if (userId) {
         api.post('/api/carthistory', {
@@ -186,7 +186,7 @@ function App() {
           ProductId: String(targetId),
           quantity: 1,
           history: 'Added'
-        }).catch(() => {});
+        }).catch(() => { });
       }
       return [...prev, { id: targetId, quantity: 1 }];
     });
@@ -199,9 +199,9 @@ function App() {
         api.get(`/api/carthistory?userId=${userId}`).then(res => {
           const found = res.data.find(c => Number(c.productId) === targetId);
           if (found) {
-            api.delete(`/api/carthistory/${found.id}`).catch(() => {});
+            api.delete(`/api/carthistory/${found.id}`).catch(() => { });
           }
-        }).catch(() => {});
+        }).catch(() => { });
       }
       return prev.filter(item => item.id !== targetId);
     });
@@ -218,11 +218,11 @@ function App() {
             api.put(`/api/carthistory/${found.id}`, {
               quantity: newQuantity,
               history: `Updated quantity to ${newQuantity}`
-            }).catch(() => {});
+            }).catch(() => { });
           }
-        }).catch(() => {});
+        }).catch(() => { });
       }
-      return prev.map(item => 
+      return prev.map(item =>
         item.id === targetId ? { ...item, quantity: newQuantity } : item
       );
     });
@@ -286,10 +286,10 @@ function App() {
             <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%" }}>
               {/* Outer Luxury Gold Bezel */}
               <circle cx="50" cy="50" r="45" stroke="url(#goldGradient)" strokeWidth="3" fill="#ffffff" filter="drop-shadow(0px 8px 16px rgba(191, 160, 13, 0.15))" />
-              
+
               {/* Inner Dial Circle */}
               <circle cx="50" cy="50" r="39" stroke="rgba(24, 24, 27, 0.05)" strokeWidth="1" fill="none" />
-              
+
               {/* Watch Face Ticks (Hour Markers) */}
               {[...Array(12)].map((_, i) => {
                 const angle = (i * 30 * Math.PI) / 180;
@@ -298,42 +298,42 @@ function App() {
                 const x2 = 50 + 38 * Math.sin(angle);
                 const y2 = 50 - 38 * Math.cos(angle);
                 return (
-                  <line 
+                  <line
                     key={i}
-                    x1={x1} 
-                    y1={y1} 
-                    x2={x2} 
-                    y2={y2} 
-                    stroke={i % 3 === 0 ? "#bda10d" : "rgba(24, 24, 27, 0.3)"} 
-                    strokeWidth={i % 3 === 0 ? "2.5" : "1"} 
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke={i % 3 === 0 ? "#bda10d" : "rgba(24, 24, 27, 0.3)"}
+                    strokeWidth={i % 3 === 0 ? "2.5" : "1"}
                   />
                 );
               })}
 
               {/* Ticking Hands */}
               {/* Hour Hand */}
-              <line 
-                x1="50" 
-                y1="50" 
-                x2="50" 
-                y2="28" 
-                stroke="#18181b" 
-                strokeWidth="3.5" 
+              <line
+                x1="50"
+                y1="50"
+                x2="50"
+                y2="28"
+                stroke="#18181b"
+                strokeWidth="3.5"
                 strokeLinecap="round"
                 style={{
                   transformOrigin: "50px 50px",
                   animation: "tickSecond 8s infinite linear"
                 }}
               />
-              
+
               {/* Minute Hand */}
-              <line 
-                x1="50" 
-                y1="50" 
-                x2="50" 
-                y2="20" 
-                stroke="#bda10d" 
-                strokeWidth="2" 
+              <line
+                x1="50"
+                y1="50"
+                x2="50"
+                y2="20"
+                stroke="#bda10d"
+                strokeWidth="2"
                 strokeLinecap="round"
                 style={{
                   transformOrigin: "50px 50px",
@@ -342,24 +342,24 @@ function App() {
               />
 
               {/* Second Hand (Ticking super smooth) */}
-              <line 
-                x1="50" 
-                y1="50" 
-                x2="50" 
-                y2="16" 
-                stroke="#ef4444" 
-                strokeWidth="1" 
+              <line
+                x1="50"
+                y1="50"
+                x2="50"
+                y2="16"
+                stroke="#ef4444"
+                strokeWidth="1"
                 strokeLinecap="round"
                 style={{
                   transformOrigin: "50px 50px",
                   animation: "tickSecond 0.5s infinite linear"
                 }}
               />
-              
+
               {/* Center Cap Dot */}
               <circle cx="50" cy="50" r="3.5" fill="#18181b" />
               <circle cx="50" cy="50" r="1.5" fill="#ffffff" />
-              
+
               {/* Definition of Gradients */}
               <defs>
                 <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -397,7 +397,7 @@ function App() {
               Premium klass soatlar dunyosi
             </p>
           </div>
-          
+
           {/* Mini pulse spinner dots */}
           <div style={{
             display: "flex",
@@ -451,7 +451,7 @@ function App() {
             </div>
             <span className="icon-label">Yoqtirganlarim</span>
           </div>
-          
+
           {/* Savat belgisi (Desktop) */}
           <div className="navbar-icon-item" onClick={() => navigate("/cart")} title="Savat">
             <div className="icon-wrapper">
@@ -466,50 +466,50 @@ function App() {
           </div>
         </div>
       </header>
-      
+
       <main className="main-content">
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
-              <Home 
+              <Home
                 products={products}
                 categories={categories}
-                likedProducts={likedProducts} 
-                toggleLike={toggleLike} 
+                likedProducts={likedProducts}
+                toggleLike={toggleLike}
                 cart={cart}
                 addToCart={addToCart}
               />
-            } 
+            }
           />
-          <Route 
-            path="/product/:id" 
+          <Route
+            path="/product/:id"
             element={
-              <ProductDetail 
+              <ProductDetail
                 products={products}
-                likedProducts={likedProducts} 
-                toggleLike={toggleLike} 
+                likedProducts={likedProducts}
+                toggleLike={toggleLike}
                 cart={cart}
                 addToCart={addToCart}
               />
-            } 
+            }
           />
-          <Route 
-            path="/wishlist" 
+          <Route
+            path="/wishlist"
             element={
-              <Wishlist 
+              <Wishlist
                 products={products}
-                likedProducts={likedProducts} 
-                toggleLike={toggleLike} 
+                likedProducts={likedProducts}
+                toggleLike={toggleLike}
                 cart={cart}
                 addToCart={addToCart}
               />
-            } 
+            }
           />
-          <Route 
-            path="/cart" 
+          <Route
+            path="/cart"
             element={
-              <Cart 
+              <Cart
                 products={products}
                 cart={cart}
                 updateQuantity={updateQuantity}
@@ -520,16 +520,16 @@ function App() {
                 userId={userId}
                 setCart={setCart}
               />
-            } 
+            }
           />
-          <Route 
-            path="/orders" 
+          <Route
+            path="/orders"
             element={
-              <Orders 
+              <Orders
                 products={products}
                 userId={userId}
               />
-            } 
+            }
           />
         </Routes>
       </main>
@@ -537,8 +537,8 @@ function App() {
       {/* Mobil telefonlar uchun maxsus pastki menyu (Bottom Navigation) */}
       <div className="mobile-bottom-nav">
         {/* Mahsulotlar tugmasi */}
-        <div 
-          className={`bottom-nav-item ${location.pathname === '/' ? 'active' : ''}`} 
+        <div
+          className={`bottom-nav-item ${location.pathname === '/' ? 'active' : ''}`}
           onClick={() => navigate("/")}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -551,8 +551,8 @@ function App() {
         </div>
 
         {/* Buyurtmalarim tugmasi */}
-        <div 
-          className={`bottom-nav-item ${location.pathname === '/orders' ? 'active' : ''}`} 
+        <div
+          className={`bottom-nav-item ${location.pathname === '/orders' ? 'active' : ''}`}
           onClick={() => navigate("/orders")}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -566,8 +566,8 @@ function App() {
         </div>
 
         {/* Yoqtirganlarim tugmasi */}
-        <div 
-          className={`bottom-nav-item ${location.pathname === '/wishlist' ? 'active' : ''}`} 
+        <div
+          className={`bottom-nav-item ${location.pathname === '/wishlist' ? 'active' : ''}`}
           onClick={() => navigate("/wishlist")}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={location.pathname === '/wishlist' ? "#ff3b30" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -578,8 +578,8 @@ function App() {
         </div>
 
         {/* Savat tugmasi */}
-        <div 
-          className={`bottom-nav-item ${location.pathname === '/cart' ? 'active' : ''}`} 
+        <div
+          className={`bottom-nav-item ${location.pathname === '/cart' ? 'active' : ''}`}
           onClick={() => navigate("/cart")}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
