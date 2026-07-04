@@ -257,7 +257,7 @@ function App() {
           .preloader-dot {
             width: 8px;
             height: 8px;
-            background-color: #bda10d;
+            background-color: #02733B;
             border-radius: 50%;
             display: inline-block;
             animation: preloader-bounce 1.4s infinite ease-in-out both;
@@ -287,7 +287,7 @@ function App() {
           }}>
             <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%" }}>
               {/* Outer Luxury Gold Bezel */}
-              <circle cx="50" cy="50" r="45" stroke="url(#goldGradient)" strokeWidth="3" fill="#ffffff" filter="drop-shadow(0px 8px 16px rgba(191, 160, 13, 0.15))" />
+              <circle cx="50" cy="50" r="45" stroke="url(#goldGradient)" strokeWidth="3" fill="#ffffff" filter="drop-shadow(0px 8px 16px rgba(2, 115, 59, 0.15))" />
 
               {/* Inner Dial Circle */}
               <circle cx="50" cy="50" r="39" stroke="rgba(24, 24, 27, 0.05)" strokeWidth="1" fill="none" />
@@ -306,7 +306,7 @@ function App() {
                     y1={y1}
                     x2={x2}
                     y2={y2}
-                    stroke={i % 3 === 0 ? "#bda10d" : "rgba(24, 24, 27, 0.3)"}
+                    stroke={i % 3 === 0 ? "#02733B" : "rgba(24, 24, 27, 0.3)"}
                     strokeWidth={i % 3 === 0 ? "2.5" : "1"}
                   />
                 );
@@ -334,7 +334,7 @@ function App() {
                 y1="50"
                 x2="50"
                 y2="20"
-                stroke="#bda10d"
+                stroke="#02733B"
                 strokeWidth="2"
                 strokeLinecap="round"
                 style={{
@@ -365,9 +365,9 @@ function App() {
               {/* Definition of Gradients */}
               <defs>
                 <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#dfba1a" />
-                  <stop offset="50%" stopColor="#bda10d" />
-                  <stop offset="100%" stopColor="#8d7405" />
+                  <stop offset="0%" stopColor="#10B981" />
+                  <stop offset="50%" stopColor="#02733B" />
+                  <stop offset="100%" stopColor="#014d27" />
                 </linearGradient>
               </defs>
             </svg>
@@ -381,7 +381,7 @@ function App() {
               letterSpacing: "3px",
               textTransform: "uppercase",
               margin: 0,
-              background: "linear-gradient(90deg, #18181b, #bda10d)",
+              background: "linear-gradient(90deg, #18181b, #02733B)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent"
             }}>
