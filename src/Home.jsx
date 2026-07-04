@@ -14,9 +14,9 @@ function Home({ products, categories, likedProducts, toggleLike, cart, addToCart
       <div className="home-page">
         <div className="hero-section">
           <div className="hero-content">
-            <h1 className="hero-title">Vaqtning Haqiqiy Qadri</h1>
+            <h1 className="hero-title">Al Harameen Brendining O'zbekistondagi Rasmiy Distributori</h1>
             <p className="hero-subtitle">
-              Bizning do'konda eng sara va zamonaviy soatlar jamlangan. O'zingizga mos va premium sifatdagi soatlarni kashf eting.
+             Alharameenuz orqali original va premium sifatli Al Harameen soatlarini xarid qiling. Erkaklar va ayollar uchun zamonaviy dizayn, yuqori sifat va O'zbekiston bo'ylab yetkazib berish.
             </p>
             <button 
               className="order-btn" 
@@ -26,7 +26,7 @@ function Home({ products, categories, likedProducts, toggleLike, cart, addToCart
             </button>
           </div>
           <div className="hero-image-wrapper">
-            <img src="/hero.png" alt="Zamonaviy soat" className="hero-image" />
+            <img src="/certificate.jpg" alt="Al Harameen Distributor Certificate" className="hero-image" />
           </div>
         </div>
       </div>

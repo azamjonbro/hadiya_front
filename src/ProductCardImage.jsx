@@ -30,7 +30,7 @@ export default function ProductCardImage({ images, name }) {
     if (isHovered && hasMultiple && window.innerWidth > 768) {
       intervalRef.current = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
-      }, 1500);
+      }, 500);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -100,7 +100,7 @@ export default function ProductCardImage({ images, name }) {
           width: `${galleryImages.length * 100}%`,
           height: '100%',
           transform: `translateX(-${(currentIndex * 100) / galleryImages.length}%)`,
-          transition: 'transform 450ms cubic-bezier(0.25, 1, 0.5, 1)',
+          transition: 'transform 250ms cubic-bezier(0.25, 1, 0.5, 1)',
         }}
       >
         {galleryImages.map((img, idx) => (

@@ -27,10 +27,10 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
       }
     }
     return () => {
-      document.title = "Alharameen Uzbekistan — Rasmiy Islomiy va Zamonaviy Soatlar Do'koni";
+      document.title = "Al Harameen Brendining O'zbekistondagi Rasmiy Distributori";
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
-        metaDesc.setAttribute("content", "Alharameen soatlari va uzuklarining O'zbekistondagi rasmiy do'koni. Azon ovozi, namoz vaqtlari, qibla yo'nalishini ko'rsatuvchi aqlli islomiy va zamonaviy qo'l soatlari. Eng maqbul narxlar va 1 yillik kafolat.");
+        metaDesc.setAttribute("content", "Al Harameen brendining O'zbekistondagi rasmiy distributori. Azon ovozi, namoz vaqtlari va qibla yo'nalishini ko'rsatuvchi original aqlli islomiy hamda zamonaviy qo'l soatlari.");
       }
     };
   }, [product]);
