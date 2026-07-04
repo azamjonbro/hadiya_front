@@ -23,7 +23,7 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
       document.title = `${product.name} — Alharameen Uzbekistan`;
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
-        metaDesc.setAttribute("content", product.shortDescription || `${product.name} premium islomiy va azon soati Alharameen rasmiy do'konida.`);
+        metaDesc.setAttribute("content", product.shortDescription || `${product.name} aM5M8urZ,_yvpY islomiy va azon soati Alharameen rasmiy do'konida.`);
       }
     }
     return () => {

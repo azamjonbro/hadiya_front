@@ -396,7 +396,7 @@ function App() {
               marginTop: "0.5rem",
               opacity: 0.8
             }}>
-              Premium klass soatlar dunyosi
+              Namoz vaqtlarini eslatuvchi aqilli soatlar.
             </p>
           </div>
 
