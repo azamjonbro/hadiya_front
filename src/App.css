@@ -404,7 +404,7 @@ body {
 
 @media (max-width: 500px) {
   .products-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -1755,7 +1755,7 @@ body {
     letter-spacing: -0.2px;
   }
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 0.75rem !important;
   }
   .category-btn {

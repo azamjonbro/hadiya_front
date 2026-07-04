@@ -385,7 +385,7 @@ function App() {
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent"
             }}>
-              Alharameen
+              AL HARAMEEN
             </h2>
             <p style={{
               fontSize: "0.9rem",
@@ -396,7 +396,7 @@ function App() {
               marginTop: "0.5rem",
               opacity: 0.8
             }}>
-              Namoz vaqtlarini eslatuvchi aqilli soatlar.
+              Namoz vaqtlarini eslatuvchi aqlli soatlar.
             </p>
           </div>
 
