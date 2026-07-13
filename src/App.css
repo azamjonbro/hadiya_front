@@ -41,7 +41,7 @@ body {
 
 /* Navbar */
 .navbar {
-  padding: 1.25rem 20px;
+  padding: 0.6rem 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1533,7 +1533,7 @@ body {
 /* 4. Small Tablets / iPad Mini / Portrait (max-width: 768px) */
 @media (max-width: 768px) {
   .navbar {
-    padding: 1.25rem;
+    padding: 0.6rem 20px;
   }
   .navbar-left {
     gap: 1rem;
@@ -2025,7 +2025,7 @@ body {
 
 @media (max-width: 600px) {
   .navbar {
-    padding: 0.75rem 20px !important; /* Enforce 20px padding on both sides */
+    padding: 0.5rem 16px !important;
   }
 
   .navbar-right {
