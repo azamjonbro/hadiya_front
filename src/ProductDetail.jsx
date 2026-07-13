@@ -52,6 +52,14 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
   // Extract real uploaded images, fallback to single product.image
   const galleryImages = product.images && product.images.length > 0 ? product.images : [product.image || '/product1.png'];
 
+  const handlePrevImage = () => {
+    setSelectedAngle((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setSelectedAngle((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
+  };
+
   // Fetch 4 related products from the same category
   const relatedProducts = products
     .filter(p => p.category === product.category && p.id !== product.id)
@@ -62,6 +70,21 @@ function ProductDetail({ products, cart, addToCart, likedProducts, toggleLike })
       <div className="detail-fullscreen-content">
         <div className="detail-left-visual">
           <div className="detail-image-card">
+            {galleryImages.length > 1 && (
+              <>
+                <button className="detail-nav-btn prev" onClick={handlePrevImage} title="Oldingi rasm">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <button className="detail-nav-btn next" onClick={handleNextImage} title="Keyingi rasm">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </>
+            )}
+
             <div className="main-image-viewport">
               <img 
                 src={galleryImages[selectedAngle] || '/product1.png'} 

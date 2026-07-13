@@ -536,6 +536,53 @@ function App() {
         </Routes>
       </main>
 
+      <footer className="main-footer">
+        <div className="footer-content">
+          <div className="footer-brand-section">
+            <img src="/alharameen.png" alt="Al Harameen Logo" className="footer-logo" />
+            <p className="footer-tagline">
+              Al Harameen brendining O'zbekistondagi rasmiy distribyutori. Premium aqlli azon va namoz vaqtlarini ko'rsatuvchi soatlar.
+            </p>
+          </div>
+          <div className="footer-links-section">
+            <h4 className="footer-heading">Sahifalar</h4>
+            <ul className="footer-links-list">
+              <li><span onClick={() => { navigate("/"); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="footer-link">Bosh sahifa</span></li>
+              <li><span onClick={() => { navigate("/orders"); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="footer-link">Buyurtmalarim</span></li>
+              <li><span onClick={() => { navigate("/wishlist"); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="footer-link">Yoqtirganlarim</span></li>
+              <li><span onClick={() => { navigate("/cart"); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="footer-link">Savat</span></li>
+            </ul>
+          </div>
+          <div className="footer-contact-section">
+            <h4 className="footer-heading">Aloqa va Manzil</h4>
+            <div className="footer-contact-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="footer-icon">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <a href="tel:+998885002020" className="footer-contact-link">+998 88 500 20 20</a>
+            </div>
+            <div className="footer-contact-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="footer-icon">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span className="footer-text">Namangan shaxar A. Navoiy ko'chasi, 42-uy</span>
+            </div>
+            <div className="footer-contact-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="footer-icon">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+              <a href="https://instagram.com/hadiya_uz" target="_blank" rel="noopener noreferrer" className="footer-contact-link">instagram.com/hadiya_uz</a>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; {new Date().getFullYear()} Al Harameen Uzbekistan. Barcha huquqlar himoyalangan.</p>
+        </div>
+      </footer>
+
       {/* Mobil telefonlar uchun maxsus pastki menyu (Bottom Navigation) */}
       <div className="mobile-bottom-nav">
         {/* Mahsulotlar tugmasi */}

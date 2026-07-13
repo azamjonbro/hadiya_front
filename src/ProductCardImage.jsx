@@ -47,6 +47,33 @@ export default function ProductCardImage({ images, name }) {
     };
   }, [isHovered, hasMultiple, galleryImages.length]);
 
+  const scrollToIndex = (index) => {
+    if (trackRef.current) {
+      trackRef.current.scrollTo({
+        left: index * trackRef.current.clientWidth,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    const newIndex = currentIndex === 0 ? galleryImages.length - 1 : currentIndex - 1;
+    setCurrentIndex(newIndex);
+    if (window.innerWidth <= 768) {
+      scrollToIndex(newIndex);
+    }
+  };
+
+  const handleNext = (e) => {
+    e.stopPropagation();
+    const newIndex = currentIndex === galleryImages.length - 1 ? 0 : currentIndex + 1;
+    setCurrentIndex(newIndex);
+    if (window.innerWidth <= 768) {
+      scrollToIndex(newIndex);
+    }
+  };
+
   const handleScroll = (e) => {
     if (window.innerWidth <= 768) {
       const scrollLeft = e.target.scrollLeft;
@@ -129,6 +156,30 @@ export default function ProductCardImage({ images, name }) {
         ))}
       </div>
 
+      {/* Navigation Arrows */}
+      {hasMultiple && (
+        <>
+          <button 
+            className="card-nav-arrow prev" 
+            onClick={handlePrev}
+            aria-label="Oldingi rasm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button 
+            className="card-nav-arrow next" 
+            onClick={handleNext}
+            aria-label="Keyingi rasm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </>
+      )}
+
       {/* Pagination dots */}
       {hasMultiple && (
         <div 
@@ -193,6 +244,45 @@ export default function ProductCardImage({ images, name }) {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
+        .card-nav-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #18181b;
+          cursor: pointer;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity: 0;
+          z-index: 10;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+          padding: 0;
+        }
+        .card-nav-arrow svg {
+          width: 16px;
+          height: 16px;
+        }
+        .premium-card-image-viewport:hover .card-nav-arrow {
+          opacity: 1;
+        }
+        .card-nav-arrow:hover {
+          background: #ffffff;
+          transform: translateY(-50%) scale(1.1);
+          color: #bda10d;
+        }
+        .card-nav-arrow.prev {
+          left: 10px;
+        }
+        .card-nav-arrow.next {
+          right: 10px;
+        }
         @media (max-width: 768px) {
           .image-slider-track {
             transform: none !important;
@@ -211,6 +301,17 @@ export default function ProductCardImage({ images, name }) {
             width: 100% !important;
             flex-shrink: 0 !important;
             scroll-snap-align: start !important;
+          }
+          .card-nav-arrow {
+            opacity: 0.7;
+            width: 28px;
+            height: 28px;
+          }
+          .card-nav-arrow.prev {
+            left: 8px;
+          }
+          .card-nav-arrow.next {
+            right: 8px;
           }
         }
       `}</style>
